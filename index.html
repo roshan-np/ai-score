@@ -117,7 +117,7 @@
         }
       };
 
-      function runScan() {
+function runScan() {
         var brand = document.getElementById('brand').value;
         var url = document.getElementById('url').value;
         var industry = document.getElementById('industry').value;
@@ -128,16 +128,16 @@
         document.getElementById('inputSection').classList.add('hidden');
         document.getElementById('loader').classList.remove('hidden');
 
-        // Send POST request to Apps Script
+        // UPDATED FETCH REQUEST (Fixes CORS issues)
         fetch(API_URL, {
           method: "POST",
+          // We send as plain text to bypass Google's "Preflight" check
           body: JSON.stringify({ brand: brand, url: url, industry: industry, email: email })
         })
         .then(res => res.json())
         .then(data => {
            if(data.status === "success") {
-             // For a new scan, we construct the share link based on the returned reportId
-             // This ensures the link uses the Github domain, not the script domain
+             // Construct share link
              var newShareLink = window.location.origin + window.location.pathname + "?reportId=" + data.data.shareLink.split('reportId=')[1];
              document.getElementById('shareLinkInput').value = newShareLink;
              renderResults(data.data);
@@ -145,6 +145,11 @@
              alert("Error: " + data.message);
              location.reload();
            }
+        })
+        .catch(error => {
+          alert("Connection Failed. Did you set the Script Access to 'Anyone'?");
+          console.error('Error:', error);
+          location.reload();
         });
       }
 
