@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>The AI Visibility Score - WeFlow</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  </head>
+  <body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+    
+    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-xl overflow-hidden">
+      
+      <div class="bg-[#E34D4D] p-8 text-center">
+        <h1 class="text-3xl font-extrabold text-white mb-3">
+          <i class="fa-solid fa-eye text-[#E9CE1D]"></i> The AI Visibility Score
+        </h1>
+        <p class="text-white text-opacity-90 text-lg font-medium">
+          Do ChatGPT and Gemini know you exist? Find out in 30 seconds.
+        </p>
+      </div>
+
+      <div class="p-8 space-y-5" id="inputSection">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Brand Name</label>
+            <input type="text" id="brand" placeholder="e.g. Maya Trips" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-[#E34D4D] outline-none transition">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Website URL</label>
+            <input type="text" id="url" placeholder="e.g. mayatrips.com" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-[#E34D4D] outline-none transition">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">What do you sell? (Industry)</label>
+          <input type="text" id="industry" placeholder="e.g. Best Adventure Travel Agencies in Nepal" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-[#E34D4D] outline-none transition">
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">Your Email (To receive the report)</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400"><i class="fa-solid fa-envelope"></i></span>
+            <input type="email" id="email" placeholder="name@company.com" class="w-full border border-gray-300 rounded-lg p-3 pl-10 focus:ring-2 focus:ring-[#E34D4D] outline-none transition">
+          </div>
+        </div>
+        <button onclick="runScan()" id="scanBtn" class="w-full bg-[#E34D4D] hover:opacity-90 text-white font-bold py-4 rounded-lg transition shadow-lg transform hover:-translate-y-1">
+          Check My Visibility
+        </button>
+      </div>
+
+      <div id="loader" class="hidden p-12 text-center">
+        <div class="animate-spin inline-block w-12 h-12 border-4 border-gray-200 border-t-[#E34D4D] rounded-full mb-4"></div>
+        <h3 class="text-xl font-bold text-gray-800">Scanning the AI Universe...</h3>
+        <p class="text-gray-500">Querying ChatGPT, Gemini, and Perplexity for your brand.</p>
+      </div>
+
+      <div id="resultsSection" class="hidden">
+        <div class="text-center p-8 bg-[#A6CEFF]/20 border-b border-[#A6CEFF]/30 relative">
+          <p class="text-sm font-bold text-gray-600 uppercase tracking-wide">AI Visibility Score for <span id="resultBrandName">Your Brand</span></p>
+          <div class="flex items-center justify-center mt-2">
+            <span id="bigScore" class="text-6xl md:text-8xl font-black text-[#E34D4D]">--</span>
+            <span class="text-2xl text-gray-400 font-medium self-start mt-4">/100</span>
+          </div>
+          <div id="scoreMessage" class="mt-4 inline-block px-4 py-1 rounded-full text-sm font-bold bg-white shadow-sm text-[#E34D4D]"></div>
+        </div>
+
+        <div class="p-8">
+          <div class="mb-6">
+             <input type="text" id="shareLinkInput" class="hidden">
+             <button onclick="copyShareLink()" id="shareBtn" class="w-full bg-white border-2 border-gray-200 text-gray-600 font-bold py-3 px-4 rounded-lg hover:border-[#E34D4D] hover:text-[#E34D4D] transition flex items-center justify-center gap-2 group">
+               <i class="fa-solid fa-link group-hover:text-[#E34D4D]"></i> <span id="shareBtnText">Copy Shareable Report Link</span>
+             </button>
+          </div>
+
+          <button onclick="toggleDetails()" class="w-full flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition group">
+            <span class="font-bold text-gray-700">View Detailed Breakdown</span>
+            <i class="fa-solid fa-chevron-down text-gray-400 group-hover:text-[#E9CE1D]"></i>
+          </button>
+          <div id="detailsBox" class="hidden mt-4 space-y-3"></div>
+        </div>
+        
+        <div id="newScanBox" class="hidden text-center pb-8 px-8">
+          <button onclick="window.location.href=window.location.href.split('?')[0]" class="text-[#E34D4D] font-bold text-sm hover:underline">Run a new scan</button>
+        </div>
+
+        <div class="bg-gray-100 p-4 text-center text-xs text-gray-400">Powered by WeFlow Agency</div>
+      </div>
+    </div>
+
+    <script>
+      // 1. PASTE YOUR APPS SCRIPT URL HERE (From Step 1)
+      const API_URL = "https://script.google.com/macros/s/AKfycbwYppJQOUR2hglG9hPj2wZofdeAA4RVjLHo0zrSPMja854AqIc_bsIxZ9EbvChNVZB5/exec"; 
+
+      // On Load: Check URL parameters for reportId
+      window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const reportId = urlParams.get('reportId');
+
+        if (reportId) {
+          document.getElementById('inputSection').classList.add('hidden');
+          document.getElementById('loader').classList.remove('hidden');
+          
+          // Fetch saved report from API
+          fetch(API_URL + "?reportId=" + reportId)
+            .then(res => res.json())
+            .then(data => {
+              if(data.status === "success") {
+                document.getElementById('brand').value = data.data.brandName;
+                document.getElementById('newScanBox').classList.remove('hidden');
+                // Construct share link from current URL since we are viewing it
+                document.getElementById('shareLinkInput').value = window.location.href;
+                renderResults(data.data);
+              } else {
+                alert("Report not found.");
+                window.location.href = window.location.href.split('?')[0];
+              }
+            });
+        }
+      };
+
+      function runScan() {
+        var brand = document.getElementById('brand').value;
+        var url = document.getElementById('url').value;
+        var industry = document.getElementById('industry').value;
+        var email = document.getElementById('email').value;
+
+        if(!brand || !email) { alert("Please enter Brand Name and Email."); return; }
+
+        document.getElementById('inputSection').classList.add('hidden');
+        document.getElementById('loader').classList.remove('hidden');
+
+        // Send POST request to Apps Script
+        fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify({ brand: brand, url: url, industry: industry, email: email })
+        })
+        .then(res => res.json())
+        .then(data => {
+           if(data.status === "success") {
+             // For a new scan, we construct the share link based on the returned reportId
+             // This ensures the link uses the Github domain, not the script domain
+             var newShareLink = window.location.origin + window.location.pathname + "?reportId=" + data.data.shareLink.split('reportId=')[1];
+             document.getElementById('shareLinkInput').value = newShareLink;
+             renderResults(data.data);
+           } else {
+             alert("Error: " + data.message);
+             location.reload();
+           }
+        });
+      }
+
+      function renderResults(data) {
+        document.getElementById('loader').classList.add('hidden');
+        document.getElementById('resultsSection').classList.remove('hidden');
+        document.getElementById('resultBrandName').innerText = document.getElementById('brand').value;
+        document.getElementById('bigScore').innerText = data.authorityScore;
+        
+        var msg = document.getElementById('scoreMessage');
+        if(data.authorityScore > 70) { msg.innerText = "Excellent Visibility 🚀"; }
+        else if(data.authorityScore > 40) { msg.innerText = "Needs Optimization 🔧"; }
+        else { msg.innerText = "Invisible to AI 👻"; }
+
+        var html = "";
+        data.details.forEach(row => {
+          var icon = row.status.includes("Visible") ? '<i class="fa-solid fa-check text-green-500"></i>' : '<i class="fa-solid fa-xmark text-red-400"></i>';
+          html += `
+            <div class="p-4 border rounded bg-white">
+              <div class="flex justify-between items-center mb-2">
+                <span class="font-bold text-gray-800">${row.engine}</span>
+                <span class="text-sm font-medium ${row.score > 0 ? 'text-green-600' : 'text-gray-400'}">${row.score}/100</span>
+              </div>
+              <div class="text-sm text-gray-600 flex items-start gap-2">
+                <div class="mt-1">${icon}</div>
+                <p class="line-clamp-2">${row.raw}</p>
+              </div>
+            </div>
+          `;
+        });
+        document.getElementById('detailsBox').innerHTML = html;
+      }
+
+      function toggleDetails() { document.getElementById('detailsBox').classList.toggle('hidden'); }
+      
+      function copyShareLink() {
+        var link = document.getElementById('shareLinkInput').value;
+        navigator.clipboard.writeText(link).then(function() {
+          var btnText = document.getElementById('shareBtnText');
+          btnText.innerText = "Link Copied!";
+          setTimeout(function(){ btnText.innerText = "Copy Shareable Report Link"; }, 2000);
+        });
+      }
+    </script>
+  </body>
+</html>
