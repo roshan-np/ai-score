@@ -1,15 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8">
     <title>The AI Visibility Score | WeFlow</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+      body { font-family: 'Inter', sans-serif; }
+    </style>
   </head>
   <body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
     
-    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
       
       <div class="bg-[#E34D4D] p-8 text-center">
         <div class="flex flex-col items-center">
@@ -17,8 +21,8 @@
           <p class="text-white text-opacity-80 text-xs uppercase tracking-widest font-bold mb-4">A Growth Lab powered by AI x People.</p>
         </div>
         <div class="h-px w-16 bg-white bg-opacity-30 mx-auto mb-4"></div>
-        <h2 class="text-xl font-extrabold text-white mb-2">The AI Visibility Score</h2>
-        <p class="text-[#E9CE1D] font-bold text-sm">Do ChatGPT and Gemini know you exist? Find out in 30 seconds.</p>
+        <h2 class="text-xl font-extrabold text-white mb-1">The AI Visibility Score</h2>
+        <p class="text-[#E9CE1D] font-bold text-sm italic">Do ChatGPT and Gemini know you exist? Find out in 30 seconds.</p>
       </div>
 
       <div class="p-8 space-y-5" id="inputSection">
@@ -33,7 +37,7 @@
           </div>
         </div>
         <div>
-          <label class="block text-xs font-black text-gray-500 uppercase mb-1">Target Search Query (Industry)</label>
+          <label class="block text-xs font-black text-gray-500 uppercase mb-1">What do you sell? (Industry)</label>
           <input type="text" id="industry" placeholder="e.g. Best Adventure Travel Agencies in Nepal" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-[#E34D4D] outline-none transition">
         </div>
         <div>
@@ -49,27 +53,30 @@
         <p class="text-center text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">WeFlow x You Grow. The Multiplier Effect.</p>
       </div>
 
-      <div id="loader" class="hidden p-12 text-center">
+      <div id="loader" class="hidden p-16 text-center">
         <div class="animate-spin inline-block w-12 h-12 border-4 border-gray-200 border-t-[#E34D4D] rounded-full mb-4"></div>
         <h3 class="text-xl font-bold text-gray-800 italic">Deploying AI Agents...</h3>
-        <p class="text-gray-500 text-sm">Our Growth Lab is scanning the model landscape.</p>
+        <p class="text-gray-500 text-sm">Our Growth Lab is scanning the LLM landscape.</p>
       </div>
 
-      <div id="resultsSection" class="hidden">
+      <div id="resultsSection" class="hidden animate-in fade-in duration-500">
+        
         <div class="text-center p-10 bg-[#A6CEFF]/10 border-b border-[#A6CEFF]/30">
           <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Visibility Score: <span id="resultBrandName" class="text-[#E34D4D]">--</span></p>
           <div class="flex items-center justify-center mt-2">
             <span id="bigScore" class="text-7xl md:text-8xl font-black text-[#E34D4D]">--</span>
             <span class="text-2xl text-gray-400 font-black self-start mt-4">/100</span>
           </div>
-          <div id="scoreMessage" class="mt-4 inline-block px-6 py-2 rounded-full text-xs font-black bg-white shadow-sm text-[#E34D4D] uppercase tracking-tighter"></div>
+          <div id="scoreMessage" class="mt-4 inline-block px-6 py-2 rounded-full text-xs font-black bg-white shadow-sm uppercase tracking-tighter">
+            </div>
         </div>
 
-        <div class="p-8">
-          <div class="mb-6">
+        <div class="p-8 space-y-6">
+          
+          <div>
              <input type="text" id="shareLinkInput" class="hidden">
-             <button onclick="copyShareLink()" id="shareBtn" class="w-full bg-white border-2 border-gray-200 text-gray-500 font-black text-xs uppercase py-3 rounded-lg hover:border-[#E34D4D] hover:text-[#E34D4D] transition flex items-center justify-center gap-2 group tracking-widest">
-               <i class="fa-solid fa-link group-hover:text-[#E34D4D]"></i> <span id="shareBtnText">Copy Share Link</span>
+             <button onclick="copyShareLink()" id="shareBtn" class="w-full bg-white border-2 border-gray-200 text-gray-500 font-black text-xs uppercase py-4 rounded-lg hover:border-[#E34D4D] hover:text-[#E34D4D] transition flex items-center justify-center gap-2 group tracking-widest">
+               <i class="fa-solid fa-link group-hover:text-[#E34D4D]"></i> <span id="shareBtnText">Copy Shareable Report Link</span>
              </button>
           </div>
 
@@ -78,76 +85,141 @@
             <i class="fa-solid fa-chevron-down text-gray-400 group-hover:text-[#E9CE1D]"></i>
           </button>
           <div id="detailsBox" class="hidden mt-4 space-y-3"></div>
+          
+          <div id="newScanBox" class="hidden text-center pt-4">
+            <button onclick="window.location.href=window.location.href.split('?')[0]" class="text-[#E34D4D] font-bold text-sm hover:underline">
+              ← Run a new scan
+            </button>
+          </div>
         </div>
         
         <div class="bg-gray-50 p-6 border-t border-gray-100 text-center">
-            <p class="text-xs font-bold text-gray-800 mb-2 underline decoration-[#E34D4D]">WeFlow x You Grow.</p>
+            <p class="text-xs font-bold text-gray-800 mb-1 underline decoration-[#E34D4D] decoration-2">WeFlow x You Grow.</p>
             <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-4">The Multiplier Effect for Modern Brands.</p>
-            <a href="https://weflow.agency" class="inline-block bg-black text-white text-[10px] font-bold px-4 py-2 rounded uppercase tracking-tighter hover:bg-[#E34D4D] transition">Book a Growth Audit</a>
+            <a href="https://weflow.agency" target="_blank" class="inline-block bg-black text-white text-[10px] font-bold px-6 py-3 rounded uppercase tracking-tighter hover:bg-[#E34D4D] transition">Book a Growth Audit</a>
         </div>
       </div>
+
     </div>
 
     <script>
-      // Make sure PASTE_YOUR_APPS_SCRIPT_URL_HERE is set in your copy
+      // CONFIG: PASTE YOUR GOOGLE APPS SCRIPT URL HERE
       const API_URL = "https://script.google.com/macros/s/AKfycbwfbpG1gBWUV4DUAqo7Bt6Z1jGSgIAGmRx6kToJjihYPKRp3mdIGEXwG-ey84mRnDfb/exec"; 
-      
-      // (Script logic remains identical to previous successful version)
+
+      // On Load: Handle Report Sharing
       window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
         const reportId = urlParams.get('reportId');
+
         if (reportId) {
           document.getElementById('inputSection').classList.add('hidden');
           document.getElementById('loader').classList.remove('hidden');
-          fetch(API_URL + "?reportId=" + reportId).then(res => res.json()).then(data => {
+          
+          fetch(API_URL + "?reportId=" + reportId)
+            .then(res => res.json())
+            .then(data => {
               if(data.status === "success") {
                 document.getElementById('brand').value = data.data.brandName;
+                document.getElementById('newScanBox').classList.remove('hidden');
                 document.getElementById('shareLinkInput').value = window.location.href;
                 renderResults(data.data);
-              } else { location.href = location.href.split('?')[0]; }
+                // Open details by default for shared links
+                document.getElementById('detailsBox').classList.remove('hidden');
+              } else {
+                alert("Report not found.");
+                window.location.href = window.location.href.split('?')[0];
+              }
             });
         }
       };
+
       function runScan() {
-        var b = document.getElementById('brand').value;
-        var u = document.getElementById('url').value;
-        var i = document.getElementById('industry').value;
-        var e = document.getElementById('email').value;
-        if(!b || !e) { alert("Brand and Email required."); return; }
+        var brand = document.getElementById('brand').value;
+        var url = document.getElementById('url').value;
+        var industry = document.getElementById('industry').value;
+        var email = document.getElementById('email').value;
+
+        if(!brand || !email) { alert("Please enter Brand Name and Email."); return; }
+
         document.getElementById('inputSection').classList.add('hidden');
         document.getElementById('loader').classList.remove('hidden');
-        fetch(API_URL, { method: "POST", body: JSON.stringify({ brand: b, url: u, industry: i, email: e }) })
-        .then(res => res.json()).then(data => {
+
+        fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify({ brand: brand, url: url, industry: industry, email: email })
+        })
+        .then(res => res.json())
+        .then(data => {
            if(data.status === "success") {
-             var l = window.location.origin + window.location.pathname + "?reportId=" + data.data.shareLink.split('reportId=')[1];
-             document.getElementById('shareLinkInput').value = l;
+             // Construct the shareable link using the current GitHub domain
+             var newShareLink = window.location.origin + window.location.pathname + "?reportId=" + data.data.shareLink.split('reportId=')[1];
+             document.getElementById('shareLinkInput').value = newShareLink;
              renderResults(data.data);
-           } else { location.reload(); }
+           } else {
+             alert("Error: " + data.message);
+             location.reload();
+           }
+        })
+        .catch(err => {
+          alert("Connection Error. Please ensure your Apps Script is deployed for 'Anyone'.");
+          location.reload();
         });
       }
+
       function renderResults(data) {
         document.getElementById('loader').classList.add('hidden');
         document.getElementById('resultsSection').classList.remove('hidden');
         document.getElementById('resultBrandName').innerText = document.getElementById('brand').value;
         document.getElementById('bigScore').innerText = data.authorityScore;
+        
         var msg = document.getElementById('scoreMessage');
-        if(data.authorityScore > 70) msg.innerText = "Target Verified 🚀";
-        else if(data.authorityScore > 40) msg.innerText = "Optimization Required 🔧";
-        else msg.innerText = "Zero AI Presence 👻";
+        var score = data.authorityScore;
+
+        // UPDATED BRAND-SPECIFIC SCORE LOGIC
+        if (score >= 80) {
+          msg.innerText = "Target Verified: AI Authority 🚀";
+          msg.style.color = "#16a34a"; 
+        } else if (score >= 50) {
+          msg.innerText = "Visible but Not Optimized 📈";
+          msg.style.color = "#d97706"; 
+        } else if (score > 0) {
+          msg.innerText = "Critical Gap: Low AI Visibility 🔧";
+          msg.style.color = "#E34D4D"; 
+        } else {
+          msg.innerText = "Zero AI Presence 👻";
+          msg.style.color = "#E34D4D"; 
+        }
+
         var html = "";
         data.details.forEach(row => {
           var icon = row.status.includes("Visible") ? '<i class="fa-solid fa-check text-green-500"></i>' : '<i class="fa-solid fa-xmark text-red-400"></i>';
-          html += `<div class="p-4 border rounded bg-white"><div class="flex justify-between items-center mb-2"><span class="font-bold text-gray-800 text-xs uppercase">${row.engine}</span><span class="text-xs font-black ${row.score > 0 ? 'text-green-600' : 'text-gray-400'}">${row.score}/100</span></div><div class="text-[11px] text-gray-500 flex items-start gap-2"><div class="mt-1">${icon}</div><p class="line-clamp-2 italic">${row.raw}</p></div></div>`;
+          html += `
+            <div class="p-4 border rounded bg-white">
+              <div class="flex justify-between items-center mb-2">
+                <span class="font-bold text-gray-800 text-[10px] uppercase tracking-widest">${row.engine}</span>
+                <span class="text-xs font-black ${row.score > 0 ? 'text-green-600' : 'text-gray-400'}">${row.score}/100</span>
+              </div>
+              <div class="text-[11px] text-gray-500 flex items-start gap-2">
+                <div class="mt-0.5">${icon}</div>
+                <p class="line-clamp-2 italic leading-relaxed">${row.raw}</p>
+              </div>
+            </div>
+          `;
         });
         document.getElementById('detailsBox').innerHTML = html;
       }
-      function toggleDetails() { document.getElementById('detailsBox').classList.toggle('hidden'); }
+
+      function toggleDetails() {
+        document.getElementById('detailsBox').classList.toggle('hidden');
+      }
+
       function copyShareLink() {
         var link = document.getElementById('shareLinkInput').value;
         navigator.clipboard.writeText(link).then(function() {
           var btnText = document.getElementById('shareBtnText');
-          btnText.innerText = "Copied to Clipboard!";
-          setTimeout(function(){ btnText.innerText = "Copy Share Link"; }, 2000);
+          var original = btnText.innerText;
+          btnText.innerText = "Link Copied to Clipboard!";
+          setTimeout(function(){ btnText.innerText = original; }, 2000);
         });
       }
     </script>
